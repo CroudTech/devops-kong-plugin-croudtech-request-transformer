@@ -6,6 +6,7 @@ local req_set_uri_args = ngx.req.set_uri_args
 local req_get_uri_args = ngx.req.get_uri_args
 local req_set_header = ngx.req.set_header
 local req_get_headers = ngx.req.get_headers
+local req_get_header = ngx.req.get_header
 local req_read_body = ngx.req.read_body
 local req_set_body_data = ngx.req.set_body_data
 local req_get_body_data = ngx.req.get_body_data
@@ -163,8 +164,8 @@ local function transform_querystrings(conf)
   if conf.add.querystring then
     local querystring = req_get_uri_args()
     for _, name, value in iter(conf.add.querystring) do
-      if string.sub(value, 0, 1) == '$' then
-        value = req_get_headers()[string.sub(value, 1)]
+      if string.sub(value, 1, 1) == '$' and req_get_headers()[string.sub(value, 2, -1)] then
+        value = req_get_headers()[string.sub(value, 2, -1)]
       end
       if not querystring[name] then
         querystring[name] = value
